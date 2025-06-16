@@ -260,15 +260,11 @@ export default function Home() {
                       Edit #{selectedEditIndex + 1}
                     </div>
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => {
-                          const link = document.createElement('a');
-                          link.href = resultImage;
-                          link.download = `edited-home-${selectedEditIndex + 1}.jpg`;
-                          link.click();
-                        }}
-                        className="bg-black bg-opacity-50 hover:bg-opacity-70 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2"
-                      >
+                      <a
+                        href={resultImage}
+                        download={`edited-home-${selectedEditIndex + 1}.jpg`}
+                        className="bg-black bg-opacity-50 hover:bg-opacity-70 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 no-underline"
+                      ></a>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>

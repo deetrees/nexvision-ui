@@ -93,6 +93,8 @@ link.click();
 
 **Solution**: Use a proper download hook or component.
 
+**UPDATE**: ✅ **IMPLEMENTED** - Replaced direct DOM manipulation with native HTML anchor element using href and download attributes. This is more React-friendly and works better with SSR.
+
 ### 7. Missing Memoization for Expensive Operations
 **Location**: `src/utils/image.ts` formatBytes function
 **Severity**: Low
@@ -109,7 +111,7 @@ link.click();
 3. **Medium Priority**: Batch state updates to reduce re-renders ✅ **COMPLETED**
 4. **Medium Priority**: Add proper error boundaries and timeouts ✅ **COMPLETED**
 5. **Low Priority**: Implement code splitting
-6. **Low Priority**: Replace direct DOM manipulation
+6. **Low Priority**: Replace direct DOM manipulation ✅ **COMPLETED**
 7. **Low Priority**: Add memoization for utility functions
 
 ## Performance Metrics to Track
