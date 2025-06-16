@@ -54,14 +54,24 @@ export async function compressImage(file: File, maxSizeInMB: number = 5): Promis
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, width, height);
 
-        // Start with high quality
-        let quality = 0.9;
+        let minQuality = 0.1;
+        let maxQuality = 0.9;
+        let quality = maxQuality;
         let base64 = canvas.toDataURL(file.type, quality);
+        const targetSize = maxSizeInMB * 1024 * 1024 * 1.33;
         
-        // Reduce quality until file size is under maxSizeInMB
-        while (base64.length > maxSizeInMB * 1024 * 1024 * 1.33 && quality > 0.1) {
-          quality -= 0.1;
+        let iterations = 0;
+        while (Math.abs(base64.length - targetSize) > targetSize * 0.05 && 
+               maxQuality - minQuality > 0.01 && 
+               iterations < 10) {
+          if (base64.length > targetSize) {
+            maxQuality = quality;
+          } else {
+            minQuality = quality;
+          }
+          quality = (minQuality + maxQuality) / 2;
           base64 = canvas.toDataURL(file.type, quality);
+          iterations++;
         }
 
         // Convert base64 to File
@@ -80,4 +90,4 @@ export async function compressImage(file: File, maxSizeInMB: number = 5): Promis
     };
     reader.onerror = reject;
   });
-} 
+}  
