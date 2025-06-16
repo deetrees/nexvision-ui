@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { validateImageFile, compressImage, formatBytes, MAX_IMAGE_SIZE } from "../utils/image";
 
 interface ImageMetadata {
@@ -27,6 +27,14 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (!file) return;
@@ -38,6 +46,10 @@ export default function Home() {
     }
 
     try {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+
       if (file.size > MAX_IMAGE_SIZE) {
         setIsCompressing(true);
         const compressedFile = await compressImage(file);
@@ -307,6 +319,9 @@ export default function Home() {
             
             <button
               onClick={() => {
+                if (previewUrl) {
+                  URL.revokeObjectURL(previewUrl);
+                }
                 setSelectedImage(null);
                 setPreviewUrl(null);
                 setResultImage(null);
