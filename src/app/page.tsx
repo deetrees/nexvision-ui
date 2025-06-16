@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { validateImageFile, compressImage, formatBytes, MAX_IMAGE_SIZE } from "../utils/image";
 
 interface ImageMetadata {
@@ -27,6 +27,14 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (!file) return;
@@ -38,6 +46,10 @@ export default function Home() {
     }
 
     try {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+
       if (file.size > MAX_IMAGE_SIZE) {
         setIsCompressing(true);
         const compressedFile = await compressImage(file);
@@ -106,8 +118,11 @@ export default function Home() {
           metadata: data.metadata,
         };
         
-        setEditHistory(prev => [...prev, newEdit]);
-        setSelectedEditIndex(editHistory.length);
+        const newEditHistory = [...editHistory, newEdit];
+        const newSelectedIndex = editHistory.length;
+        
+        setEditHistory(newEditHistory);
+        setSelectedEditIndex(newSelectedIndex);
         setResultImage(data.editedImageUrl);
         setImageMetadata(data.metadata);
         setEditPrompt('');
@@ -245,20 +260,16 @@ export default function Home() {
                       Edit #{selectedEditIndex + 1}
                     </div>
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => {
-                          const link = document.createElement('a');
-                          link.href = resultImage;
-                          link.download = `edited-home-${selectedEditIndex + 1}.jpg`;
-                          link.click();
-                        }}
-                        className="bg-black bg-opacity-50 hover:bg-opacity-70 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2"
+                      <a
+                        href={resultImage}
+                        download={`edited-home-${selectedEditIndex + 1}.jpg`}
+                        className="bg-black bg-opacity-50 hover:bg-opacity-70 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 no-underline"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
                         Download
-                      </button>
+                      </a>
                     </div>
                     {imageMetadata && (
                       <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
@@ -307,6 +318,9 @@ export default function Home() {
             
             <button
               onClick={() => {
+                if (previewUrl) {
+                  URL.revokeObjectURL(previewUrl);
+                }
                 setSelectedImage(null);
                 setPreviewUrl(null);
                 setResultImage(null);
