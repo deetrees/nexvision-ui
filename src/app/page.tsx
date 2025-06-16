@@ -118,8 +118,11 @@ export default function Home() {
           metadata: data.metadata,
         };
         
-        setEditHistory(prev => [...prev, newEdit]);
-        setSelectedEditIndex(editHistory.length);
+        const newEditHistory = [...editHistory, newEdit];
+        const newSelectedIndex = editHistory.length;
+        
+        setEditHistory(newEditHistory);
+        setSelectedEditIndex(newSelectedIndex);
         setResultImage(data.editedImageUrl);
         setImageMetadata(data.metadata);
         setEditPrompt('');
