@@ -66,6 +66,8 @@ setImageMetadata(data.metadata);
 
 **Solution**: Implement request timeouts, retry logic, and better error handling.
 
+**UPDATE**: ✅ **IMPLEMENTED** - Added 120-second timeout using Promise.race() to prevent hanging requests. The API will now properly timeout and return an error instead of hanging indefinitely.
+
 ### 5. Large Bundle Size - No Code Splitting
 **Location**: `src/app/page.tsx` (entire component)
 **Severity**: Low-Medium
@@ -105,7 +107,7 @@ link.click();
 1. **High Priority**: Fix memory leaks (URL.createObjectURL cleanup) ✅ **COMPLETED**
 2. **Medium Priority**: Optimize image compression algorithm ✅ **COMPLETED**
 3. **Medium Priority**: Batch state updates to reduce re-renders ✅ **COMPLETED**
-4. **Medium Priority**: Add proper error boundaries and timeouts
+4. **Medium Priority**: Add proper error boundaries and timeouts ✅ **COMPLETED**
 5. **Low Priority**: Implement code splitting
 6. **Low Priority**: Replace direct DOM manipulation
 7. **Low Priority**: Add memoization for utility functions

@@ -38,9 +38,13 @@ export async function POST(request: Request) {
       auth: apiKey,
     });
 
-    // Run the FLUX-1 Kontext model
+    // Run the FLUX-1 Kontext model with timeout handling
     // Model: https://replicate.com/flux-1/kontext
-    const output = await replicate.run(
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Request timeout after 120 seconds')), 120000);
+    });
+
+    const replicatePromise = replicate.run(
       "flux-1/kontext:9e6f5170e6b14500dd330f4f5c80a5f67564b5f0d78d4b8c390419925b3e0c46",
       {
         input: {
@@ -53,6 +57,8 @@ export async function POST(request: Request) {
         }
       }
     );
+
+    const output = await Promise.race([replicatePromise, timeoutPromise]);
 
     // The model returns an array of image URLs
     const editedImageUrl = Array.isArray(output) ? output[0] : output;
@@ -77,4 +83,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-} 
+}  
