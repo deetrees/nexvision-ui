@@ -14,7 +14,6 @@ export default function SafeSlider({ leftImage, rightImage }: SafeSliderProps) {
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   useEffect(() => {
-    // Check if touch events are supported
     setIsTouchDevice(typeof TouchEvent !== 'undefined' && 'ontouchstart' in window);
   }, []);
 
@@ -78,7 +77,6 @@ export default function SafeSlider({ leftImage, rightImage }: SafeSliderProps) {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Right Image (Original) */}
       <div className="absolute inset-0">
         <img
           src={rightImage}
@@ -90,7 +88,6 @@ export default function SafeSlider({ leftImage, rightImage }: SafeSliderProps) {
         </div>
       </div>
 
-      {/* Left Image (Reimagined) with clip-path */}
       <div
         className="absolute inset-0"
         style={{
@@ -107,7 +104,6 @@ export default function SafeSlider({ leftImage, rightImage }: SafeSliderProps) {
         </div>
       </div>
 
-      {/* Slider Handle */}
       <div
         className="absolute top-0 bottom-0 w-1 bg-white cursor-ew-resize transform -translate-x-1/2"
         style={{ left: `${sliderPosition}%` }}
@@ -118,4 +114,4 @@ export default function SafeSlider({ leftImage, rightImage }: SafeSliderProps) {
       </div>
     </div>
   );
-} 
+}

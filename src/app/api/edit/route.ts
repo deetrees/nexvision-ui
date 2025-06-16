@@ -12,11 +12,10 @@ interface Prediction {
   error?: string;
 }
 
-// Helper function to wait for prediction
 async function waitForPrediction(prediction: Prediction): Promise<string | string[] | Record<string, unknown>> {
   while (['starting', 'processing'].includes(prediction.status)) {
     console.log('Polling prediction status:', prediction.status);
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second between polls
+    await new Promise(resolve => setTimeout(resolve, 1000));
     prediction = await replicate.predictions.get(prediction.id) as Prediction;
   }
 
@@ -38,57 +37,60 @@ export async function POST(request: Request) {
       );
     }
 
-    // Convert base64 to a temporary URL using a data URI
     const imageUri = inputImageUrl.startsWith('data:') 
       ? inputImageUrl 
       : `data:image/jpeg;base64,${inputImageUrl}`;
 
-    console.log('Starting reimagining process with FLUX-1 Kontext...'); // Debug log
+    console.log('Starting reimagining process with FLUX-1 Kontext...');
 
-    // Create the reimagine request with FLUX-1 Kontext parameters
     const prediction = await replicate.predictions.create({
       version: "0b9c317b23e79a9a0d8b9602ff4d04030d433055927fb7c4b91c44234a6818c4",
       input: {
-        input_image: imageUri,
+        image: imageUri,
         prompt: reimagineInstruction,
-        aspect_ratio: "match_input_image",
-        seed: -1 // Random seed for variety
-      },
+        num_inference_steps: 28,
+        guidance_scale: 3.5,
+        num_outputs: 1,
+        aspect_ratio: "1:1",
+        output_format: "jpg",
+        output_quality: 80,
+        seed: Math.floor(Math.random() * 1000000)
+      }
     }) as Prediction;
 
-    console.log('Reimagine request created, waiting for result...'); // Debug log
+    console.log('Prediction created:', prediction.id);
 
-    // Wait for the reimagining to complete
     const output = await waitForPrediction(prediction);
-    console.log('Reimagining completed:', output); // Debug log
-
-    // Handle different possible output formats
-    let outputUrl: string;
-
-    if (typeof output === 'string') {
-      outputUrl = output;
-    } else if (Array.isArray(output) && output.length > 0) {
-      outputUrl = output[0];
-    } else if (output && typeof output === 'object') {
-      const possibleUrls = Object.values(output).filter((value): value is string => 
-        typeof value === 'string' && 
-        (value.startsWith('http://') || value.startsWith('https://'))
-      );
-      if (possibleUrls.length > 0) {
-        outputUrl = possibleUrls[0];
-      } else {
-        throw new Error('No valid image URL found in reimagined output');
-      }
+    
+    let resultUrl: string;
+    if (Array.isArray(output)) {
+      resultUrl = output[0] as string;
+    } else if (typeof output === 'string') {
+      resultUrl = output;
     } else {
-      throw new Error(`Unexpected output format: ${JSON.stringify(output)}`);
+      throw new Error('Unexpected output format from prediction');
     }
 
-    return NextResponse.json({ result: outputUrl });
+    console.log('Reimagining completed successfully');
+
+    return NextResponse.json({
+      success: true,
+      result: resultUrl,
+      metadata: {
+        model: 'FLUX-1 Kontext Max',
+        version: '0b9c317b',
+        prompt: reimagineInstruction
+      }
+    });
+
   } catch (error) {
-    console.error('Error details:', error);
+    console.error('Error in reimagine API:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to reimagine the image' },
+      { 
+        error: error instanceof Error ? error.message : 'Failed to process image',
+        details: error instanceof Error ? error.stack : undefined
+      },
       { status: 500 }
     );
   }
-} 
+}

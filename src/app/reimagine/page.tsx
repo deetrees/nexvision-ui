@@ -145,12 +145,11 @@ export default function ReimaginePage() {
         const a = document.createElement('a');
         a.href = url;
         
-        // Create a filename based on original image name and transformation
         const originalName = selectedImage?.name || 'image';
-        const baseName = originalName.replace(/\.[^/.]+$/, ''); // Remove extension
+        const baseName = originalName.replace(/\.[^/.]+$/, '');
         const transformationType = reimagineInstruction.toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-') // Replace special chars with hyphens
-          .slice(0, 30); // Limit length
+          .replace(/[^a-z0-9]+/g, '-')
+          .slice(0, 30);
         
         a.download = `${baseName}-${transformationType}.jpg`;
         document.body.appendChild(a);
@@ -168,7 +167,6 @@ export default function ReimaginePage() {
 
   return (
     <main className="min-h-screen flex flex-col">
-      {/* Background with image and gradient overlay */}
       <div 
         className="fixed inset-0 bg-cover bg-center bg-no-repeat bg-fixed"
         style={{ 
@@ -177,11 +175,9 @@ export default function ReimaginePage() {
       />
       <div className="fixed inset-0 bg-black/60" />
 
-      {/* Content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-12 md:py-16">
         <div className="w-full max-w-5xl mx-auto">
           {!previewUrl ? (
-            // Initial Upload State
             <div className="max-w-xl mx-auto">
               <div className="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/20">
                 <h1 className="text-3xl md:text-4xl font-bold text-white mb-6 text-center">
@@ -224,12 +220,9 @@ export default function ReimaginePage() {
               </div>
             </div>
           ) : (
-            // Preview and Edit State
             <div className="flex flex-col items-center space-y-8">
-              {/* Image Comparison Section */}
               <div className="w-full bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-6 md:p-8 border border-white/20">
                 <div className="flex flex-col md:flex-row md:items-stretch gap-4 md:gap-6">
-                  {/* Original Image */}
                   <div className="flex-1">
                     <h3 className="text-white font-bold text-lg mb-3 text-center">Original</h3>
                     <div className="aspect-square w-full relative rounded-xl overflow-hidden bg-black/30">
@@ -241,7 +234,6 @@ export default function ReimaginePage() {
                     </div>
                   </div>
 
-                  {/* Reimagined Image */}
                   <div className="flex-1">
                     <h3 className="text-white font-bold text-lg mb-3 text-center">Reimagined</h3>
                     <div className="aspect-square w-full relative rounded-xl overflow-hidden bg-black/30">
@@ -313,7 +305,6 @@ export default function ReimaginePage() {
                 </div>
               </div>
 
-              {/* Reimagine Form */}
               <form 
                 className="w-full max-w-2xl mx-auto" 
                 onSubmit={handleSubmit}
@@ -365,4 +356,4 @@ export default function ReimaginePage() {
       </div>
     </main>
   );
-} 
+}
