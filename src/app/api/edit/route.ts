@@ -52,7 +52,7 @@ export async function POST(request: Request) {
         guidance_scale: 3.5,
         num_outputs: 1,
         aspect_ratio: "1:1",
-        output_format: "webp",
+        output_format: "jpg",
         output_quality: 80,
         seed: Math.floor(Math.random() * 1000000)
       }
