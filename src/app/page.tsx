@@ -264,12 +264,12 @@ export default function Home() {
                         href={resultImage}
                         download={`edited-home-${selectedEditIndex + 1}.jpg`}
                         className="bg-black bg-opacity-50 hover:bg-opacity-70 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 no-underline"
-                      ></a>
+                      >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
                         Download
-                      </button>
+                      </a>
                     </div>
                     {imageMetadata && (
                       <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
