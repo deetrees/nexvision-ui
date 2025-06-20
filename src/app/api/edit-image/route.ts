@@ -61,10 +61,9 @@ export async function POST(request: Request) {
     console.log('File size:', image.size);
     console.log('Buffer length:', imageBuffer.length);
     
-    // Resize image to 768px and convert to data URL
-    const { buffer: resizedBuffer, mimeType } = await resizeImageTo768px(imageBuffer, image.type);
-    const base64Image = resizedBuffer.toString('base64');
-    const dataUrl = `data:${mimeType};base64,${base64Image}`;
+    console.log('Bypassing Sharp, using original image buffer directly');
+    const base64Image = imageBuffer.toString('base64');
+    const dataUrl = `data:${image.type};base64,${base64Image}`;
 
     // Initialize Replicate client
     const replicate = new Replicate({
@@ -120,4 +119,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}                                            
+}                                                
