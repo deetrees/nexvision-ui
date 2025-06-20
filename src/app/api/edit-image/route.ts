@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     });
 
     const replicatePromise = replicate.run(
-      "black-forest-labs/flux-kontext-max",
+      "black-forest-labs/flux-kontext-pro",
       {
         input: {
           input_image: dataUrl,
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
       success: true,
       editedImageUrl,
       metadata: {
-        model: "black-forest-labs/flux-kontext-max",
+        model: "black-forest-labs/flux-kontext-pro",
         version: "latest",
       }
     });
@@ -119,4 +119,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}                                                
+}                                                    
