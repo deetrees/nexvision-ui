@@ -5,13 +5,18 @@ import sharp from 'sharp';
 async function resizeImageTo768px(buffer: Buffer): Promise<Buffer> {
   console.log('Processing image with Sharp, buffer length:', buffer.length);
   
-  return await sharp(buffer)
-    .resize(768, 768, {
-      fit: 'inside',
-      withoutEnlargement: true
-    })
-    .png({ quality: 90 })
-    .toBuffer();
+  try {
+    return await sharp(buffer)
+      .resize(768, 768, {
+        fit: 'inside',
+        withoutEnlargement: true
+      })
+      .png({ quality: 90 })
+      .toBuffer();
+  } catch (error) {
+    console.error('Sharp processing failed, using original buffer:', error);
+    return buffer;
+  }
 }
 
 export async function POST(request: Request) {
@@ -100,4 +105,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}                            
+}                                
