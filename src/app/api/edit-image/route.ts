@@ -2,20 +2,33 @@ import { NextResponse } from 'next/server';
 import Replicate from 'replicate';
 import sharp from 'sharp';
 
-async function resizeImageTo768px(buffer: Buffer): Promise<Buffer> {
+async function resizeImageTo768px(buffer: Buffer, originalType: string): Promise<{ buffer: Buffer, mimeType: string }> {
   console.log('Processing image with Sharp, buffer length:', buffer.length);
   
   try {
-    return await sharp(buffer)
+    let sharpInstance = sharp(buffer)
       .resize(768, 768, {
         fit: 'inside',
         withoutEnlargement: true
-      })
-      .png({ quality: 90 })
-      .toBuffer();
+      });
+    
+    let mimeType = originalType;
+    if (originalType === 'image/jpeg') {
+      sharpInstance = sharpInstance.jpeg({ quality: 90 });
+    } else if (originalType === 'image/png') {
+      sharpInstance = sharpInstance.png({ quality: 90 });
+    } else if (originalType === 'image/webp') {
+      sharpInstance = sharpInstance.webp({ quality: 90 });
+    } else {
+      sharpInstance = sharpInstance.jpeg({ quality: 90 });
+      mimeType = 'image/jpeg';
+    }
+    
+    const processedBuffer = await sharpInstance.toBuffer();
+    return { buffer: processedBuffer, mimeType };
   } catch (error) {
     console.error('Sharp processing failed, using original buffer:', error);
-    return buffer;
+    return { buffer, mimeType: originalType };
   }
 }
 
@@ -49,9 +62,9 @@ export async function POST(request: Request) {
     console.log('Buffer length:', imageBuffer.length);
     
     // Resize image to 768px and convert to data URL
-    const resizedBuffer = await resizeImageTo768px(imageBuffer);
+    const { buffer: resizedBuffer, mimeType } = await resizeImageTo768px(imageBuffer, image.type);
     const base64Image = resizedBuffer.toString('base64');
-    const dataUrl = `data:image/png;base64,${base64Image}`;
+    const dataUrl = `data:${mimeType};base64,${base64Image}`;
 
     // Initialize Replicate client
     const replicate = new Replicate({
@@ -107,4 +120,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}                                    
+}                                            
