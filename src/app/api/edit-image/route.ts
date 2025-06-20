@@ -2,27 +2,29 @@ import { NextResponse } from 'next/server';
 import Replicate from 'replicate';
 import sharp from 'sharp';
 
-async function streamToBase64(file: File): Promise<string> {
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  return buffer.toString('base64');
-}
-
-async function resizeImageTo768px(file: File): Promise<Buffer> {
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+async function resizeImageTo768px(buffer: Buffer): Promise<Buffer> {
+  console.log('Processing image with Sharp, buffer length:', buffer.length);
   
   return await sharp(buffer)
     .resize(768, 768, {
       fit: 'inside',
       withoutEnlargement: true
     })
-    .jpeg({ quality: 90 })
+    .png({ quality: 90 })
     .toBuffer();
 }
 
 export async function POST(request: Request) {
   try {
+    const apiKey = process.env.REPLICATE_API_TOKEN;
+    if (!apiKey) {
+      console.error('Replicate API token not configured');
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
     const formData = await request.formData();
     const image = formData.get('image') as File;
     const prompt = formData.get('prompt') as string;
@@ -34,19 +36,17 @@ export async function POST(request: Request) {
       );
     }
 
-    const apiKey = process.env.REPLICATE_API_TOKEN;
-    if (!apiKey) {
-      console.error('Replicate API token not configured');
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
-    }
-
+    const arrayBuffer = await image.arrayBuffer();
+    const imageBuffer = Buffer.from(arrayBuffer);
+    
+    console.log('File type:', image.type);
+    console.log('File size:', image.size);
+    console.log('Buffer length:', imageBuffer.length);
+    
     // Resize image to 768px and convert to base64
-    const resizedBuffer = await resizeImageTo768px(image);
+    const resizedBuffer = await resizeImageTo768px(imageBuffer);
     const base64Image = resizedBuffer.toString('base64');
-    const dataUrl = `data:image/jpeg;base64,${base64Image}`;
+    const dataUrl = `data:image/png;base64,${base64Image}`;
 
     // Initialize Replicate client
     const replicate = new Replicate({
@@ -63,20 +63,24 @@ export async function POST(request: Request) {
       "black-forest-labs/flux-kontext-max",
       {
         input: {
-          image: dataUrl,
+          input_image: dataUrl,
           prompt: prompt,
-          num_inference_steps: 30,
-          guidance_scale: 7.5,
-          strength: 0.8,
           seed: Math.floor(Math.random() * 1000000),
+          aspect_ratio: "match_input_image",
+          output_format: "png",
+          safety_tolerance: 2,
         }
       }
     );
 
     const output = await Promise.race([replicatePromise, timeoutPromise]);
 
-    // The model returns an array of image URLs
-    const editedImageUrl = Array.isArray(output) ? output[0] : output;
+    console.log('Replicate API output:', JSON.stringify(output, null, 2));
+    console.log('Output type:', typeof output);
+    console.log('Output keys:', Object.keys(output || {}));
+
+    // The model returns a single URI
+    const editedImageUrl = output;
 
     if (!editedImageUrl) {
       throw new Error('No output received from the model');
@@ -98,4 +102,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}    
+}                        
