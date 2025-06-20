@@ -1,10 +1,24 @@
 import { NextResponse } from 'next/server';
 import Replicate from 'replicate';
+import sharp from 'sharp';
 
 async function streamToBase64(file: File): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   return buffer.toString('base64');
+}
+
+async function resizeImageTo768px(file: File): Promise<Buffer> {
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  
+  return await sharp(buffer)
+    .resize(768, 768, {
+      fit: 'inside',
+      withoutEnlargement: true
+    })
+    .jpeg({ quality: 90 })
+    .toBuffer();
 }
 
 export async function POST(request: Request) {
@@ -29,9 +43,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Convert image to base64
-    const base64Image = await streamToBase64(image);
-    const dataUrl = `data:${image.type};base64,${base64Image}`;
+    // Resize image to 768px and convert to base64
+    const resizedBuffer = await resizeImageTo768px(image);
+    const base64Image = resizedBuffer.toString('base64');
+    const dataUrl = `data:image/jpeg;base64,${base64Image}`;
 
     // Initialize Replicate client
     const replicate = new Replicate({
@@ -45,7 +60,7 @@ export async function POST(request: Request) {
     });
 
     const replicatePromise = replicate.run(
-      "flux-1/kontext:9e6f5170e6b14500dd330f4f5c80a5f67564b5f0d78d4b8c390419925b3e0c46",
+      "black-forest-labs/flux-kontext-max",
       {
         input: {
           image: dataUrl,
@@ -71,8 +86,8 @@ export async function POST(request: Request) {
       success: true,
       editedImageUrl,
       metadata: {
-        model: "flux-1/kontext",
-        version: "9e6f5170",
+        model: "black-forest-labs/flux-kontext-max",
+        version: "latest",
       }
     });
 
@@ -83,4 +98,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}  
+}    
