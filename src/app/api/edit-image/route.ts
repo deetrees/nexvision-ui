@@ -48,8 +48,10 @@ export async function POST(request: Request) {
     console.log('File size:', image.size);
     console.log('Buffer length:', imageBuffer.length);
     
-    // Resize image to 768px
+    // Resize image to 768px and convert to data URL
     const resizedBuffer = await resizeImageTo768px(imageBuffer);
+    const base64Image = resizedBuffer.toString('base64');
+    const dataUrl = `data:image/png;base64,${base64Image}`;
 
     // Initialize Replicate client
     const replicate = new Replicate({
@@ -66,7 +68,7 @@ export async function POST(request: Request) {
       "black-forest-labs/flux-kontext-max",
       {
         input: {
-          input_image: resizedBuffer,
+          input_image: dataUrl,
           prompt: prompt,
           seed: Math.floor(Math.random() * 1000000),
           aspect_ratio: "match_input_image",
@@ -105,4 +107,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}                                
+}                                    
