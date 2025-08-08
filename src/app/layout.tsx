@@ -4,8 +4,8 @@ import "./globals.css";
 import Navigation from "./components/Navigation";
 
 const inter = Inter({
-  variable: "--font-inter",
   subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
