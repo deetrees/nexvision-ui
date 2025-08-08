@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useRef, useState } from "react";
-import Image from 'next/image';
 
 export default function ReimaginePage() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
