@@ -14,7 +14,15 @@ interface Prediction {
 
 // Helper function to wait for prediction
 async function waitForPrediction(prediction: Prediction): Promise<string | string[] | Record<string, unknown>> {
+  const MAX_POLLING_TIME = 60000; // 60 seconds maximum
+  const startTime = Date.now();
+
   while (['starting', 'processing'].includes(prediction.status)) {
+    // Check if we've exceeded the maximum polling time
+    if (Date.now() - startTime > MAX_POLLING_TIME) {
+      throw new Error('Prediction timeout: The image processing is taking longer than expected. Please try again.');
+    }
+
     console.log('Polling prediction status:', prediction.status);
     await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second between polls
     prediction = await replicate.predictions.get(prediction.id) as Prediction;
