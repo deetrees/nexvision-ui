@@ -6,11 +6,16 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "amplify:dev": "npx ampx sandbox",
+    "amplify:deploy": "npx ampx pipeline-deploy --branch main"
   },
   "dependencies": {
+    "@aws-amplify/backend": "^1.16.1",
+    "@aws-amplify/backend-cli": "^1.8.0",
+    "aws-amplify": "^6.15.5",
     "heic2any": "^0.0.4",
-    "next": "15.3.3",
+    "next": "^15.4.6",
     "react": "^19.0.0",
     "react-compare-image": "^3.5.4",
     "react-dom": "^19.0.0",

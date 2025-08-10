@@ -1,0 +1,20 @@
+{
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-nexvisionui-prod-f06b9-authRole",
+      "UnauthRoleArn": "arn:aws:iam::520864643635:role/amplify-nexvisionui-prod-f06b9-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::520864643635:role/amplify-nexvisionui-prod-f06b9-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-nexvisionui-prod-f06b9-deployment",
+      "UnauthRoleName": "amplify-nexvisionui-prod-f06b9-unauthRole",
+      "StackName": "amplify-nexvisionui-prod-f06b9",
+      "StackId": "arn:aws:cloudformation:us-east-1:520864643635:stack/amplify-nexvisionui-prod-f06b9/d0f2fb20-754a-11f0-b6c4-0e7b44b72747",
+      "AmplifyAppId": "d2r8i8wxpv35jq"
+    },
+    "categories": {
+      "hosting": {
+        "S3AndCloudFront": {}
+      }
+    }
+  }
+}
