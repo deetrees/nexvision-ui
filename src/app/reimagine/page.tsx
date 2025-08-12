@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useRef, useState } from "react";
+import Header from "../components/Header";
+import { storeImagesForTraining } from "../utils/imageStorage";
 
 export default function ReimaginePage() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -110,8 +112,26 @@ export default function ReimaginePage() {
       const imgElement = document.createElement('img');
       
       await new Promise<void>((resolve, reject) => {
-        imgElement.onload = () => {
+        imgElement.onload = async () => {
           setReimaginedImageUrl(imageUrl);
+          
+          // Store images for model training (don't block the UI)
+          if (selectedImage) {
+            try {
+              const userEmail = localStorage.getItem('nexvision_email') || undefined;
+              await storeImagesForTraining({
+                originalImage: selectedImage,
+                reimaginedImageUrl: imageUrl,
+                instruction: reimagineInstruction,
+                userEmail: userEmail
+              });
+              console.log('Images stored for model training');
+            } catch (error) {
+              console.error('Failed to store images for training:', error);
+              // Don't show error to user as this is background functionality
+            }
+          }
+          
           resolve();
         };
         imgElement.onerror = () => {
@@ -167,6 +187,9 @@ export default function ReimaginePage() {
 
   return (
     <main className="min-h-screen flex flex-col">
+      {/* Header */}
+      <Header showBackButton={true} className="relative z-50" />
+      
       {/* Background with image and gradient overlay */}
       <div 
         className="fixed inset-0 bg-cover bg-center bg-no-repeat bg-fixed"
@@ -311,6 +334,51 @@ export default function ReimaginePage() {
                   </div>
                 </div>
               </div>
+
+              {/* Download Section */}
+              {reimaginedImageUrl && (
+                <div className="w-full max-w-2xl mx-auto mb-8">
+                  <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 text-center">
+                    <h3 className="text-white font-bold text-xl mb-4">
+                      🎉 Your Transformation is Ready!
+                    </h3>
+                    <p className="text-white/80 mb-6">
+                      Download your reimagined home exterior and share it with friends, family, or contractors.
+                    </p>
+                    <button
+                      onClick={handleDownload}
+                      disabled={isDownloading}
+                      className="inline-flex items-center gap-3 bg-green-600 hover:bg-green-700 
+                               text-white px-8 py-4 rounded-xl text-lg font-semibold 
+                               transition-all duration-200 transform hover:-translate-y-1 
+                               hover:shadow-lg active:translate-y-0 active:shadow-md
+                               disabled:opacity-50 disabled:cursor-not-allowed 
+                               disabled:hover:translate-y-0 disabled:hover:shadow-none
+                               focus:outline-none focus:ring-4 focus:ring-green-500/50"
+                    >
+                      {isDownloading ? (
+                        <>
+                          <svg className="w-6 h-6 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                          </svg>
+                          Downloading...
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                          Download High-Quality Image
+                        </>
+                      )}
+                    </button>
+                    <p className="text-white/60 text-sm mt-3">
+                      Perfect for sharing, printing, or planning your renovation
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Reimagine Form */}
               <form 
