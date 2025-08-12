@@ -102,9 +102,9 @@ export async function GET() {
 
     const fs = require('fs');
     const logContent = fs.readFileSync(masterLogPath, 'utf-8');
-    const lines = logContent.trim().split('\n').filter(line => line.length > 0);
+    const lines = logContent.trim().split('\n').filter((line: string) => line.length > 0);
     
-    const sessions = lines.map(line => {
+    const sessions = lines.map((line: string) => {
       try {
         return JSON.parse(line);
       } catch {
@@ -116,7 +116,7 @@ export async function GET() {
       totalSessions: sessions.length,
       totalImages: sessions.length * 2, // original + reimagined
       latestSession: sessions[sessions.length - 1]?.timestamp,
-      instructionTypes: [...new Set(sessions.map(s => s.instruction))].length
+      instructionTypes: [...new Set(sessions.map((s: any) => s.instruction))].length
     };
 
     return NextResponse.json(stats);
