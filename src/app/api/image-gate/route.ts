@@ -157,7 +157,7 @@ async function analyzeImage(imageBuffer: Buffer, options: ImageGateOptions): Pro
     result.text = textResponse?.TextDetections || [];
 
     // Quick rejection checks first
-    if (result.moderationLabels.length > 0) {
+    if (result.moderationLabels && result.moderationLabels.length > 0) {
       result.approved = false;
       result.reasons.push(`Inappropriate content detected: ${result.moderationLabels.map(label => label.Name).join(', ')}`);
       return result;
