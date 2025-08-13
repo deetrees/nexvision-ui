@@ -1,0 +1,86 @@
+
+> nexvision-ui@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.4.6 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.151:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 807ms
+ ○ Compiling /api/edit ...
+ ✓ Compiled /api/edit in 659ms
+Credits check skipped - feature disabled
+ POST /api/edit 400 in 755ms
+ ✓ Compiled /api/debug-replicate in 70ms
+Replicate debug error: Error [ApiError]: Request to https://api.replicate.com/v1/models failed with status 401 Unauthorized: {"title":"Unauthenticated","detail":"You did not pass a valid authentication token","status":401}
+.
+    at async GET (src/app/api/debug-replicate/route.ts:20:19)
+  18 |
+  19 |     // Test basic connection
+> 20 |     const models = await replicate.models.list({ limit: 1 });
+     |                   ^
+  21 |     
+  22 |     return NextResponse.json({ 
+  23 |       status: 'success', {
+  request: Request {
+    method: 'GET',
+    url: 'https://api.replicate.com/v1/models',
+    headers: Headers {
+      'Content-Type': 'application/json',
+      'User-Agent': 'replicate-javascript/1.0.1',
+      Authorization: 'Bearer r8_JTeyrYEH3u8vI2LCMzfUQXvni7H04a0ql4XN'
+    },
+    destination: '',
+    referrer: 'about:client',
+    referrerPolicy: '',
+    mode: 'cors',
+    credentials: 'same-origin',
+    cache: 'default',
+    redirect: 'follow',
+    integrity: '',
+    keepalive: false,
+    isReloadNavigation: false,
+    isHistoryNavigation: false,
+    signal: [AbortSignal]
+  },
+  response: Response {
+    status: 401,
+    statusText: 'Unauthorized',
+    headers: Headers {
+      date: 'Wed, 13 Aug 2025 14:11:59 GMT',
+      'content-type': 'application/problem+json',
+      'content-length': '98',
+      connection: 'keep-alive',
+      via: '1.1 google',
+      'alt-svc': 'h3=":443"; ma=86400',
+      'cf-cache-status': 'DYNAMIC',
+      nel: '{"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}',
+      'strict-transport-security': 'max-age=15552000',
+      'expect-ct': 'max-age=86400, enforce',
+      'referrer-policy': 'same-origin',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '1; mode=block',
+      'report-to': '{"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=Cx4xIsjXwxoW%2BRwGIf3Ag41iVMxAkfdD8HwsAQd0XqxEGJJY2t%2BMm7DfAEf%2BCzctNJAtlhvNSkj1gvnWq%2B1a6ZAvPBjRkPRn6OM%2BZPISVkxQHmw2O6rOPdR1axI%3D"}]}',
+      server: 'cloudflare',
+      'cf-ray': '96e8ce079ef05d07-ORD'
+    },
+    body: undefined,
+    bodyUsed: true,
+    ok: false,
+    redirected: false,
+    type: 'default',
+    url: 'https://api.replicate.com/v1/models'
+  }
+}
+ GET /api/debug-replicate 500 in 503ms
+ ○ Compiling /test ...
+ ✓ Compiled /test in 1318ms
+ GET /test 200 in 1455ms
+ GET /test 200 in 113ms
+ ✓ Compiled /api/debug-env in 188ms
+ GET /api/debug-env 200 in 271ms
+   Reload env: .env.local
+[?25h
