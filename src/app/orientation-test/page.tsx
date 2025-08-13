@@ -191,6 +191,7 @@ export default function OrientationTestPage() {
                 overflow: 'hidden',
                 background: '#f8f9fa'
               }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={testResult.originalUrl} 
                   alt="Original" 
@@ -217,6 +218,7 @@ export default function OrientationTestPage() {
                 overflow: 'hidden',
                 background: '#f8f9fa'
               }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={testResult.correctedUrl} 
                   alt="Corrected" 

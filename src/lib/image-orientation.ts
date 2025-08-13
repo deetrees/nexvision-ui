@@ -289,8 +289,8 @@ async function applyOrientationTransform(
         }
         
         // Apply flips
-        let scaleX = flipH ? -1 : 1;
-        let scaleY = flipV ? -1 : 1;
+        const scaleX = flipH ? -1 : 1;
+        const scaleY = flipV ? -1 : 1;
         ctx.scale(scaleX, scaleY);
         
         // Draw image centered

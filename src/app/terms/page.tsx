@@ -1,5 +1,3 @@
-import Link from 'next/link';
-import Image from 'next/image';
 import Header from '../components/Header';
 
 export default function Terms() {
@@ -19,7 +17,7 @@ export default function Terms() {
             <section>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Agreement to Terms</h2>
               <p className="text-gray-600 leading-relaxed">
-                By accessing and using NexVision ("Service"), you agree to be bound by these Terms of Service ("Terms"). 
+                By accessing and using NexVision (&quot;Service&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;). 
                 If you disagree with any part of these terms, then you may not access the Service. These Terms apply to 
                 all visitors, users, and others who access or use the Service.
               </p>
@@ -65,7 +63,7 @@ export default function Terms() {
                 <li>Upload images you do not own or have permission to use</li>
                 <li>Upload inappropriate, offensive, or illegal content</li>
                 <li>Attempt to reverse engineer or copy our AI technology</li>
-                <li>Use the Service to create content that violates others' rights</li>
+                <li>Use the Service to create content that violates others&apos; rights</li>
                 <li>Attempt to circumvent usage limits or payment systems</li>
                 <li>Use automated systems to access the Service without permission</li>
                 <li>Upload images containing people without their consent</li>
@@ -85,7 +83,7 @@ export default function Terms() {
 
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Our Content</h3>
               <ul className="list-disc pl-6 space-y-2 text-gray-600">
-                <li>NexVision's AI technology, software, and Service are our intellectual property</li>
+                <li>NexVision&apos;s AI technology, software, and Service are our intellectual property</li>
                 <li>You may not copy, modify, or distribute our technology</li>
                 <li>Our trademarks and branding remain our property</li>
               </ul>

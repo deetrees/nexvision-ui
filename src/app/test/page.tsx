@@ -2,8 +2,25 @@
 
 import { useState } from 'react';
 
+interface TestResult {
+  success: boolean;
+  approved: boolean;
+  reasons: string[];
+  analysis: {
+    moderationLabels?: Array<{ Name?: string; Confidence?: number }>;
+    faces?: Array<{ BoundingBox?: object }>;
+    text?: Array<{ DetectedText?: string; Confidence?: number }>;
+    labels?: Array<{ Name?: string; Confidence?: number }>;
+  };
+  metadata: {
+    filename: string;
+    size: number;
+    type: string;
+  };
+}
+
 export default function TestPage() {
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<TestResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const testImageGate = async (file: File) => {

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from "react";
+import Image from "next/image";
 import Header from "../components/Header";
 import { storeImagesForTraining } from "../utils/imageStorage";
 import { correctImageOrientation, needsOrientationCorrection } from "../../lib/image-orientation";
@@ -429,6 +430,7 @@ export default function ReimaginePage() {
                   <div className="flex-1">
                     <h3 className="text-white font-bold text-lg mb-3 text-center">Original</h3>
                     <div className="aspect-square w-full relative rounded-xl overflow-hidden bg-black/30">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={previewUrl}
                         alt="Original"
@@ -486,6 +488,7 @@ export default function ReimaginePage() {
                     <div className="aspect-square w-full relative rounded-xl overflow-hidden bg-black/30">
                       {reimaginedImageUrl ? (
                         <>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={reimaginedImageUrl}
                             alt="Reimagined"

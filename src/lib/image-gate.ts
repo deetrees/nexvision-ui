@@ -11,10 +11,10 @@ export interface ImageGateResponse {
   approved: boolean;
   reasons: string[];
   analysis: {
-    moderationLabels?: any[];
-    faces?: any[];
-    text?: any[];
-    labels?: any[];
+    moderationLabels?: Array<{ Name?: string; Confidence?: number }>;
+    faces?: Array<{ BoundingBox?: object }>;
+    text?: Array<{ DetectedText?: string; Confidence?: number }>;
+    labels?: Array<{ Name?: string; Confidence?: number }>;
   };
   metadata: {
     filename: string;
@@ -164,7 +164,7 @@ export function formatArchitecturalResults(analysis: ImageGateResponse['analysis
 }
 
 // Helper to determine if labels indicate architectural content
-export function isArchitecturalContent(labels: any[]): boolean {
+export function isArchitecturalContent(labels: Array<{ Name?: string; Confidence?: number }>): boolean {
   const architecturalKeywords = [
     'building', 'house', 'home', 'architecture', 'room', 'interior', 'exterior',
     'door', 'window', 'roof', 'wall', 'floor', 'ceiling', 'kitchen', 'bathroom',
