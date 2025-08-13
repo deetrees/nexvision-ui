@@ -146,10 +146,10 @@ async function analyzeImage(imageBuffer: Buffer, options: ImageGateOptions): Pro
     const responses = await Promise.all(promises);
     
     // Parse responses
-    const moderationResponse = responses[0];
-    const labelResponse = responses[1];
-    const faceResponse = options.checkFaces ? responses[2] : null;
-    const textResponse = options.checkText ? responses[options.checkFaces ? 3 : 2] : null;
+    const moderationResponse = responses[0] as any;
+    const labelResponse = responses[1] as any;
+    const faceResponse = options.checkFaces ? responses[2] as any : null;
+    const textResponse = options.checkText ? responses[options.checkFaces ? 3 : 2] as any : null;
 
     result.moderationLabels = moderationResponse.ModerationLabels || [];
     result.labels = labelResponse.Labels || [];
