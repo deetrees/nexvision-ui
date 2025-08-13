@@ -1,5 +1,3 @@
-import Link from 'next/link';
-import Image from 'next/image';
 import Header from '../components/Header';
 
 export default function Privacy() {
@@ -19,7 +17,7 @@ export default function Privacy() {
             <section>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Introduction</h2>
               <p className="text-gray-600 leading-relaxed">
-                At NexVision ("we," "our," or "us"), we respect your privacy and are committed to protecting your personal data. 
+                At NexVision (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), we respect your privacy and are committed to protecting your personal data. 
                 This privacy policy explains how we collect, use, and safeguard your information when you use our AI-powered 
                 exterior home transformation service.
               </p>
@@ -30,7 +28,7 @@ export default function Privacy() {
               
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Images You Upload</h3>
               <ul className="list-disc pl-6 space-y-2 text-gray-600 mb-6">
-                <li>Photos of your home's exterior that you voluntarily upload for transformation</li>
+                <li>Photos of your home&apos;s exterior that you voluntarily upload for transformation</li>
                 <li>These images are processed by our AI system to generate transformations</li>
                 <li>Images are temporarily stored during processing and automatically deleted after 24 hours</li>
               </ul>
@@ -119,7 +117,7 @@ export default function Privacy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Children's Privacy</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Children&apos;s Privacy</h2>
               <p className="text-gray-600 leading-relaxed">
                 NexVision is not intended for children under 13. We do not knowingly collect personal information 
                 from children under 13. If you believe we have collected information from a child under 13, 
@@ -140,7 +138,7 @@ export default function Privacy() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Changes to This Policy</h2>
               <p className="text-gray-600 leading-relaxed">
                 We may update this privacy policy from time to time. We will notify you of any changes by posting 
-                the new privacy policy on this page and updating the "Last updated" date. We encourage you to 
+                the new privacy policy on this page and updating the &quot;Last updated&quot; date. We encourage you to 
                 review this privacy policy periodically.
               </p>
             </section>

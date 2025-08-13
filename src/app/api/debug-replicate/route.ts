@@ -17,7 +17,7 @@ export async function GET() {
     });
 
     // Test basic connection
-    const models = await replicate.models.list({ limit: 1 });
+    const models = await replicate.models.list();
     
     return NextResponse.json({ 
       status: 'success',

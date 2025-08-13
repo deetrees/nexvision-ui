@@ -12,10 +12,10 @@ interface ImageGateResponse {
   approved: boolean;
   reasons: string[];
   analysis: {
-    moderationLabels?: any[];
-    faces?: any[];
-    text?: any[];
-    labels?: any[];
+    moderationLabels?: Array<{ Name?: string; Confidence?: number }>;
+    faces?: Array<{ BoundingBox?: object }>;
+    text?: Array<{ DetectedText?: string; Confidence?: number }>;
+    labels?: Array<{ Name?: string; Confidence?: number }>;
   };
   metadata: {
     filename: string;
