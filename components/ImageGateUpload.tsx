@@ -38,7 +38,7 @@ export default function ImageGateUpload({
       } else {
         const options = {
           faces: moderationLevel === 'strict',
-          text: moderationLevel !== 'permissive',
+          text: moderationLevel !== 'lenient',
           threshold: moderationLevel === 'strict' ? 30 : moderationLevel === 'moderate' ? 50 : 70
         };
         analysis = await imageGate.analyzeImage(file, options);
