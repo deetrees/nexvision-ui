@@ -36,7 +36,7 @@ export async function GET() {
       type: error instanceof Error ? error.constructor.name : 'Unknown',
       hasToken: !!process.env.REPLICATE_API_TOKEN,
       tokenLength: process.env.REPLICATE_API_TOKEN?.length || 0,
-      details: error.toString()
+      details: String(error)
     }, { status: 500 });
   }
 }
