@@ -164,14 +164,14 @@ async function analyzeImage(imageBuffer: Buffer, options: ImageGateOptions): Pro
     }
 
     // Check for people in the image
-    if (result.faces.length > 0) {
+    if (result.faces && result.faces.length > 0) {
       result.approved = false;
       result.reasons.push(`People detected in image (${result.faces.length} face(s)). Please upload images without people.`);
       return result;
     }
 
     // Check for architectural/property-related content
-    const detectedLabels = result.labels.map(label => label.Name || '');
+    const detectedLabels = (result.labels || []).map(label => label.Name || '');
     const acceptableMatches = detectedLabels.filter(label => 
       ACCEPTABLE_LABELS.some(acceptable => 
         label.toLowerCase().includes(acceptable.toLowerCase()) ||
