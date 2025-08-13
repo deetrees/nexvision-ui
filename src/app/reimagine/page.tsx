@@ -160,7 +160,7 @@ export default function ReimaginePage() {
       return response.json();
     } catch (error) {
       clearTimeout(timeoutId);
-      if (error.name === 'AbortError') {
+      if (error instanceof Error && error.name === 'AbortError') {
         throw new Error('Image validation timed out. Please try with a smaller image.');
       }
       throw error;
