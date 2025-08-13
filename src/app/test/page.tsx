@@ -37,7 +37,13 @@ export default function TestPage() {
       const data = await response.json();
       setResult(data);
     } catch (error) {
-      setResult({ error: error.message });
+      setResult({
+        success: false,
+        approved: false,
+        reasons: [error instanceof Error ? error.message : 'Unknown error'],
+        analysis: {},
+        metadata: { filename: '', size: 0, type: '' }
+      });
     } finally {
       setIsLoading(false);
     }
