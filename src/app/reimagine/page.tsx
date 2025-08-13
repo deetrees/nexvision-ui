@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useRef, useState } from "react";
-import Image from "next/image";
 import Header from "../components/Header";
 import { storeImagesForTraining } from "../utils/imageStorage";
 import { correctImageOrientation, needsOrientationCorrection } from "../../lib/image-orientation";
@@ -626,7 +625,7 @@ export default function ReimaginePage() {
                   />
                   <button
                     type="submit"
-                    disabled={isProcessing || (imageValidation && !imageValidation.approved)}
+                    disabled={isProcessing || (imageValidation ? !imageValidation.approved : false)}
                     className={`w-full md:max-w-xs mx-auto block px-8 py-4 rounded-xl font-semibold text-lg
                               transition-all duration-200 transform hover:-translate-y-1
                               active:translate-y-0 shadow-lg hover:shadow-xl
