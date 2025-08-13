@@ -82,7 +82,7 @@ export default function OrientationTestPage() {
 
     } catch (error) {
       console.error('Error processing image:', error);
-      alert(`Failed to process image: ${error.message}`);
+      alert(`Failed to process image: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsProcessing(false);
     }
