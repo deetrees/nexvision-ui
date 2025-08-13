@@ -143,7 +143,7 @@ export function formatArchitecturalResults(analysis: ImageGateResponse['analysis
   }
 
   if (analysis.text?.length) {
-    const textItems = analysis.text.filter(t => t.Type === 'LINE').map(t => t.DetectedText);
+    const textItems = analysis.text.map(t => t.DetectedText).filter(Boolean);
     if (textItems.length) {
       results.push(`📝 Text Found: ${textItems.join(', ')}`);
     }
