@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { imageGate, ImageGateResponse, formatAnalysisResults, getModerationLevel } from '@/lib/image-gate';
+import { imageGate, ImageGateResponse } from '@/lib/image-gate';
 
 interface ImageGateUploadProps {
   onImageApproved?: (file: File, analysis: ImageGateResponse) => void;
@@ -34,9 +34,13 @@ export default function ImageGateUpload({
       let analysis: ImageGateResponse;
 
       if (enableFullAnalysis) {
-        analysis = await imageGate.fullAnalysis(file);
+        analysis = await imageGate.analyzeArchitecturalImage(file);
       } else {
-        const options = getModerationLevel(moderationLevel);
+        const options = {
+          faces: moderationLevel === 'strict',
+          text: moderationLevel !== 'permissive',
+          threshold: moderationLevel === 'strict' ? 30 : moderationLevel === 'moderate' ? 50 : 70
+        };
         analysis = await imageGate.analyzeImage(file, options);
       }
 
@@ -116,8 +120,12 @@ export default function ImageGateUpload({
             <div className="mt-3">
               <strong>Analysis Results:</strong>
               <div className="text-sm text-gray-700 mt-1">
-                {formatAnalysisResults(lastAnalysis.analysis).map((result, index) => (
-                  <div key={index} className="mb-1">• {result}</div>
+                {Object.entries(lastAnalysis.analysis).map(([key, value]) => (
+                  value && Array.isArray(value) && value.length > 0 && (
+                    <div key={key} className="mb-1">
+                      • {key}: {value.map((item: { Name?: string; DetectedText?: string }) => item.Name || item.DetectedText).filter(Boolean).join(', ')}
+                    </div>
+                  )
                 ))}
               </div>
             </div>
