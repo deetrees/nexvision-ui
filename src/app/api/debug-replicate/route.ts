@@ -32,8 +32,8 @@ export async function GET() {
     console.error('Replicate debug error:', error);
     
     return NextResponse.json({ 
-      error: error.message,
-      type: error.constructor.name,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      type: error instanceof Error ? error.constructor.name : 'Unknown',
       hasToken: !!process.env.REPLICATE_API_TOKEN,
       tokenLength: process.env.REPLICATE_API_TOKEN?.length || 0,
       details: error.toString()
