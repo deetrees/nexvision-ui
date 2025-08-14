@@ -45,59 +45,34 @@ interface ImageGateResult {
   confidence?: number;
 }
 
-// Define acceptable architectural/property-related labels
-const ACCEPTABLE_LABELS = [
-  // Buildings and structures
-  'Building', 'House', 'Home', 'Architecture', 'Mansion', 'Villa', 'Cottage', 'Cabin',
-  'Apartment Building', 'Condominium', 'Office Building', 'Skyscraper', 'Tower',
-  'Church', 'Cathedral', 'Temple', 'Mosque', 'Synagogue', 'Chapel',
-  'School', 'University', 'Hospital', 'Hotel', 'Restaurant', 'Shop', 'Store',
-  'Warehouse', 'Factory', 'Barn', 'Garage', 'Shed', 'Greenhouse',
+// Positive indicators - if ANY of these are found with good confidence, approve the image
+const ARCHITECTURAL_INDICATORS = [
+  // Exterior Architecture
+  'House', 'Building', 'Architecture', 'Residential Building', 'Facade', 'Roof',
+  'Home', 'Cottage', 'Villa', 'Mansion', 'Apartment Building', 'Townhouse',
+  'Porch', 'Balcony', 'Window', 'Door', 'Garage', 'Driveway',
+  'Yard', 'Garden', 'Lawn', 'Backyard', 'Front Yard', 'Patio', 'Deck',
   
-  // Exterior elements
-  'Roof', 'Door', 'Window', 'Balcony', 'Porch', 'Deck', 'Patio', 'Terrace',
-  'Garden', 'Yard', 'Lawn', 'Driveway', 'Sidewalk', 'Fence', 'Gate',
-  'Pool', 'Swimming Pool', 'Hot Tub', 'Gazebo', 'Pergola',
-  'Brick', 'Stone', 'Wood', 'Concrete', 'Siding', 'Stucco',
+  // Interior Spaces
+  'Room', 'Living Room', 'Kitchen', 'Bathroom', 'Bedroom', 'Dining Room',
+  'Interior Design', 'Furniture', 'Cabinet', 'Counter', 'Fireplace',
+  'Ceiling', 'Floor', 'Wall', 'Hardwood Floor', 'Tile Floor',
   
-  // Interior elements
-  'Room', 'Living Room', 'Bedroom', 'Kitchen', 'Bathroom', 'Dining Room',
-  'Office', 'Study', 'Library', 'Basement', 'Attic', 'Hallway', 'Staircase',
-  'Fireplace', 'Ceiling', 'Floor', 'Wall', 'Cabinet', 'Counter', 'Countertop',
-  'Furniture', 'Chair', 'Table', 'Sofa', 'Bed', 'Desk', 'Shelf', 'Bookshelf',
-  'Appliance', 'Refrigerator', 'Oven', 'Stove', 'Dishwasher', 'Washer', 'Dryer',
-  'Light', 'Lamp', 'Chandelier', 'Mirror', 'Curtain', 'Blinds',
-  
-  // Architectural details
-  'Column', 'Pillar', 'Arch', 'Dome', 'Spire', 'Chimney', 'Gutter',
-  'Molding', 'Trim', 'Tile', 'Hardwood', 'Carpet', 'Marble', 'Granite',
-  'Paint', 'Wallpaper', 'Texture', 'Pattern',
-  
-  // Property-related
-  'Real Estate', 'Property', 'Residence', 'Commercial', 'Residential',
-  'Interior Design', 'Architecture', 'Construction', 'Renovation'
+  // Architectural Features
+  'Brick', 'Stone', 'Siding', 'Stucco', 'Wood', 'Concrete',
+  'Shingle', 'Metal Roof', 'Chimney', 'Gutter', 'Trim'
 ];
 
-// Labels that should be rejected (non-architectural content)
-const REJECTED_LABELS = [
-  // People and animals
-  'Person', 'Human', 'Face', 'People', 'Man', 'Woman', 'Child', 'Baby',
-  'Animal', 'Dog', 'Cat', 'Pet', 'Bird', 'Horse', 'Cow', 'Wildlife',
-  
-  // Vehicles
-  'Car', 'Truck', 'Vehicle', 'Automobile', 'Motorcycle', 'Bicycle', 'Boat', 'Plane',
-  
-  // Nature (unless part of landscaping)
-  'Forest', 'Mountain', 'Beach', 'Ocean', 'Lake', 'River', 'Desert',
-  
-  // Food and dining (unless architectural dining spaces)
-  'Food', 'Meal', 'Plate', 'Bowl', 'Drink', 'Beverage',
-  
-  // Electronics (unless built-in)
-  'Phone', 'Computer', 'Laptop', 'Television', 'TV', 'Monitor',
-  
-  // Clothing and personal items
-  'Clothing', 'Shirt', 'Pants', 'Shoes', 'Bag', 'Purse', 'Jewelry'
+// Strong negative indicators - reject ONLY if these are dominant AND no architectural elements
+const STRONG_NEGATIVES = [
+  'Person', 'Human', 'Face', 'People', 'Man', 'Woman', 'Child',
+  'Nudity', 'Explicit', 'Violence', 'Weapon', 'Drug'
+];
+
+// Contextual negatives - only reject if these are present WITHOUT architectural context
+const CONTEXTUAL_NEGATIVES = [
+  'Animal', 'Dog', 'Cat', 'Pet', 'Wildlife',
+  'Vehicle Only', 'Car Interior', 'Truck Interior'
 ];
 
 async function analyzeImage(imageBuffer: Buffer, options: ImageGateOptions): Promise<ImageGateResult> {
@@ -118,8 +93,8 @@ async function analyzeImage(imageBuffer: Buffer, options: ImageGateOptions): Pro
       // Check for general labels (most important for architectural detection)
       rekognitionClient.send(new DetectLabelsCommand({
         Image: { Bytes: imageBuffer },
-        MaxLabels: 20, // Reduced for speed
-        MinConfidence: 60,
+        MaxLabels: 50, // More labels for better context
+        MinConfidence: 30, // Lower threshold for better detection
       }))
     ];
 
@@ -170,36 +145,73 @@ async function analyzeImage(imageBuffer: Buffer, options: ImageGateOptions): Pro
       return result;
     }
 
-    // Check for architectural/property-related content
-    const detectedLabels = (result.labels || []).map(label => label.Name || '');
-    const acceptableMatches = detectedLabels.filter(label => 
-      ACCEPTABLE_LABELS.some(acceptable => 
-        label.toLowerCase().includes(acceptable.toLowerCase()) ||
-        acceptable.toLowerCase().includes(label.toLowerCase())
+    // Analyze labels for architectural content using robust approach
+    const detectedLabels = (result.labels || [])
+      .map(label => ({ name: label.Name || '', confidence: label.Confidence || 0 }))
+      .filter(label => label.confidence > 30);
+
+    // Find architectural indicators
+    const architecturalMatches = detectedLabels.filter(label =>
+      ARCHITECTURAL_INDICATORS.some(indicator =>
+        label.name.toLowerCase().includes(indicator.toLowerCase()) ||
+        indicator.toLowerCase().includes(label.name.toLowerCase())
       )
     );
 
-    const rejectedMatches = detectedLabels.filter(label => 
-      REJECTED_LABELS.some(rejected => 
-        label.toLowerCase().includes(rejected.toLowerCase()) ||
-        rejected.toLowerCase().includes(label.toLowerCase())
+    // Find strong negatives
+    const strongNegatives = detectedLabels.filter(label =>
+      STRONG_NEGATIVES.some(negative =>
+        label.name.toLowerCase().includes(negative.toLowerCase())
       )
     );
 
-    console.log('Detected labels:', detectedLabels);
-    console.log('Acceptable matches:', acceptableMatches);
-    console.log('Rejected matches:', rejectedMatches);
+    // Find contextual negatives
+    const contextualNegatives = detectedLabels.filter(label =>
+      CONTEXTUAL_NEGATIVES.some(negative =>
+        label.name.toLowerCase().includes(negative.toLowerCase())
+      )
+    );
 
-    // Decision logic
-    if (acceptableMatches.length === 0) {
+    console.log('Detected labels:', detectedLabels.map(l => `${l.name} (${l.confidence}%)`));
+    console.log('Architectural matches:', architecturalMatches.map(m => m.name));
+    console.log('Strong negatives:', strongNegatives.map(n => n.name));
+    console.log('Contextual negatives:', contextualNegatives.map(n => n.name));
+
+    // Robust Decision Logic
+    if (strongNegatives.length > 0) {
       result.approved = false;
-      result.reasons.push('No architectural or property-related content detected. Only images of homes, buildings, interiors, and exteriors are allowed.');
-    } else if (rejectedMatches.length > 0 && rejectedMatches.length >= acceptableMatches.length) {
-      result.approved = false;
-      result.reasons.push(`Image contains non-architectural content: ${rejectedMatches.join(', ')}. Please upload images of buildings, homes, or property features only.`);
-    } else {
+      result.reasons.push(`❌ Inappropriate content detected: ${strongNegatives.map(n => n.name).join(', ')}`);
+    } else if (architecturalMatches.length > 0) {
+      // Found architectural content - approve!
       result.approved = true;
-      result.reasons.push(`Architectural content detected: ${acceptableMatches.join(', ')}`);
+      const highConfidenceMatches = architecturalMatches
+        .filter(match => match.confidence > 60)
+        .map(match => match.name);
+      
+      result.reasons.push(`✅ Architectural content detected: ${highConfidenceMatches.join(', ')}`);
+      
+      // Note contextual elements if present
+      if (contextualNegatives.length > 0) {
+        result.reasons.push(`ℹ️ Also detected: ${contextualNegatives.map(n => n.name).join(', ')} (acceptable with architectural content)`);
+      }
+    } else if (contextualNegatives.length > 0) {
+      // No architectural content found, but contextual negatives present
+      result.approved = false;
+      result.reasons.push(`❌ No architectural content found. Detected: ${contextualNegatives.map(n => n.name).join(', ')}`);
+      result.reasons.push(`💡 Please upload images of homes, buildings, or interior spaces.`);
+    } else {
+      // Generic rejection - no clear architectural content
+      result.approved = false;
+      result.reasons.push(`❌ No architectural content detected in this image.`);
+      result.reasons.push(`💡 Please upload photos of house exteriors, building facades, or interior rooms.`);
+      
+      if (detectedLabels.length > 0) {
+        const topLabels = detectedLabels
+          .sort((a, b) => b.confidence - a.confidence)
+          .slice(0, 5)
+          .map(label => label.name);
+        result.reasons.push(`🔍 Detected: ${topLabels.join(', ')}`);
+      }
     }
 
   } catch (error) {
