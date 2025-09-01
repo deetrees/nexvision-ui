@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import Replicate from 'replicate';
+import OpenAI from 'openai';
 import { featureFlags } from '../../config/features';
 
 // Validate environment
@@ -7,9 +8,17 @@ if (!process.env.REPLICATE_API_TOKEN) {
   throw new Error('REPLICATE_API_TOKEN environment variable is required');
 }
 
+if (!process.env.OPENAI_API_KEY) {
+  console.warn('OPENAI_API_KEY not found - OpenAI image generation will be unavailable');
+}
+
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
+
+const openai = process.env.OPENAI_API_KEY ? new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+}) : null;
 
 // Simple rate limiting (in production, use Redis or database)
 const rateLimitMap = new Map();
@@ -67,6 +76,68 @@ async function waitForPrediction(prediction: Prediction): Promise<string | strin
   }
 
   throw new Error(`Processing failed. Please try again.`);
+}
+
+// OpenAI GPT Image-1 function (placeholder for when API becomes available)
+async function generateWithOpenAI(imageUri: string, prompt: string): Promise<string> {
+  if (!openai) {
+    throw new Error('OpenAI not available');
+  }
+
+  console.log('Attempting OpenAI GPT Image-1 generation...');
+
+  try {
+    // TODO: Replace with actual GPT Image-1 API when available
+    // For now, this will throw to trigger Flux fallback
+    throw new Error('GPT Image-1 API not yet available - falling back to Flux');
+    
+    // Future implementation would be something like:
+    // const response = await openai.images.edit({
+    //   model: "gpt-image-1",
+    //   image: imageBuffer,
+    //   prompt: prompt,
+    //   ...
+    // });
+
+  } catch (error) {
+    console.error('❌ OpenAI generation failed:', error);
+    throw error;
+  }
+}
+
+// Flux-1 Kontext fallback function
+async function generateWithFlux(imageUri: string, prompt: string): Promise<string> {
+  console.log('Using Flux-1 Kontext fallback...');
+
+  const prediction = await replicate.predictions.create({
+    version: "0b9c317b23e79a9a0d8b9602ff4d04030d433055927fb7c4b91c44234a6818c4",
+    input: {
+      input_image: imageUri,
+      prompt: prompt,
+      aspect_ratio: "match_input_image",
+      seed: -1
+    },
+  }) as Prediction;
+
+  const output = await waitForPrediction(prediction);
+
+  // Handle different possible output formats
+  if (typeof output === 'string') {
+    return output;
+  } else if (Array.isArray(output) && output.length > 0) {
+    return output[0];
+  } else if (output && typeof output === 'object') {
+    const possibleUrls = Object.values(output).filter((value): value is string => 
+      typeof value === 'string' && 
+      (value.startsWith('http://') || value.startsWith('https://'))
+    );
+    if (possibleUrls.length > 0) {
+      return possibleUrls[0];
+    }
+    throw new Error('No valid image URL found in Flux output');
+  }
+
+  throw new Error(`Unexpected output format: ${JSON.stringify(output)}`);
 }
 
 export async function POST(request: Request) {
@@ -131,47 +202,45 @@ export async function POST(request: Request) {
       ? inputImageUrl 
       : `data:image/jpeg;base64,${inputImageUrl}`;
 
-    console.log('Starting reimagining process with FLUX-1 Kontext...'); // Debug log
+    console.log('🚀 Starting image generation with OpenAI → Flux fallback strategy');
 
-    // Create the reimagine request with FLUX-1 Kontext parameters
-    const prediction = await replicate.predictions.create({
-      version: "0b9c317b23e79a9a0d8b9602ff4d04030d433055927fb7c4b91c44234a6818c4",
-      input: {
-        input_image: imageUri,
-        prompt: reimagineInstruction,
-        aspect_ratio: "match_input_image",
-        seed: -1 // Random seed for variety
-      },
-    }) as Prediction;
+    let outputUrl: string | undefined;
+    let usedProvider = 'unknown';
 
-    console.log('Reimagine request created, waiting for result...'); // Debug log
-
-    // Wait for the reimagining to complete
-    const output = await waitForPrediction(prediction);
-    console.log('Reimagining completed:', output); // Debug log
-
-    // Handle different possible output formats
-    let outputUrl: string;
-
-    if (typeof output === 'string') {
-      outputUrl = output;
-    } else if (Array.isArray(output) && output.length > 0) {
-      outputUrl = output[0];
-    } else if (output && typeof output === 'object') {
-      const possibleUrls = Object.values(output).filter((value): value is string => 
-        typeof value === 'string' && 
-        (value.startsWith('http://') || value.startsWith('https://'))
-      );
-      if (possibleUrls.length > 0) {
-        outputUrl = possibleUrls[0];
-      } else {
-        throw new Error('No valid image URL found in reimagined output');
+    try {
+      // Try OpenAI GPT Image-1 first
+      if (openai) {
+        try {
+          outputUrl = await generateWithOpenAI(imageUri, reimagineInstruction);
+          usedProvider = 'OpenAI';
+          console.log('✅ Successfully generated with OpenAI');
+        } catch (openaiError) {
+          console.log('⚠️ OpenAI failed, falling back to Flux-1 Kontext:', openaiError);
+          // Fall through to Flux fallback
+        }
       }
-    } else {
-      throw new Error(`Unexpected output format: ${JSON.stringify(output)}`);
+
+      // Fallback to Flux-1 Kontext if OpenAI failed or unavailable
+      if (!outputUrl) {
+        outputUrl = await generateWithFlux(imageUri, reimagineInstruction);
+        usedProvider = 'Flux-1 Kontext';
+        console.log('✅ Successfully generated with Flux-1 Kontext fallback');
+      }
+
+      if (!outputUrl) {
+        throw new Error('Failed to generate image with any provider');
+      }
+
+    } catch (error) {
+      console.error('❌ Both providers failed:', error);
+      throw error;
     }
 
-    return NextResponse.json({ result: outputUrl });
+    console.log(`🎉 Image generation completed using: ${usedProvider}`);
+    return NextResponse.json({ 
+      result: outputUrl,
+      provider: usedProvider 
+    });
   } catch (error) {
     console.error('Error details:', error);
     

@@ -71,11 +71,10 @@ export default function Home() {
           {/* Hero Text */}
           <div className="mb-8 px-4">
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 tracking-tight">
-              Transform Your Home's Exterior with AI
+              Upload. Describe. Transform.
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-medium leading-relaxed max-w-3xl mx-auto mb-6">
-              Upload a photo of your home, describe your dream exterior, and watch AI instantly reimagine your property. 
-              Professional curb appeal transformations in seconds.
+              Simply upload a photo of your home and describe the changes you want. Our AI will instantly transform your exterior with professional-quality results.
             </p>
             
             {/* Value Props */}
@@ -123,8 +122,9 @@ export default function Home() {
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              Try It Free Now
+              Upload & Transform Your Home
             </button>
+            
             
             {credits === 0 && (
               <button
