@@ -79,7 +79,7 @@ async function waitForPrediction(prediction: Prediction): Promise<string | strin
 }
 
 // OpenAI GPT Image-1 function (placeholder for when API becomes available)
-async function generateWithOpenAI(imageUri: string, prompt: string): Promise<string> {
+async function generateWithOpenAI(_imageUri: string, _prompt: string): Promise<string> {
   if (!openai) {
     throw new Error('OpenAI not available');
   }

@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
         : 'JPEG files are recommended for EXIF orientation testing'
     });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to analyze file' },
       { status: 500 }

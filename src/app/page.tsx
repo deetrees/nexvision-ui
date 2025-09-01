@@ -177,7 +177,7 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Lightning Fast</h3>
-              <p className="text-gray-600">See your home's potential in under 30 seconds. Perfect for planning renovations or selling.</p>
+              <p className="text-gray-600">See your home&apos;s potential in under 30 seconds. Perfect for planning renovations or selling.</p>
             </div>
             
             <div className="text-center p-6">
@@ -187,7 +187,7 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Boost Curb Appeal</h3>
-              <p className="text-gray-600">Transform siding, roofing, landscaping, and more. Increase your home's value and appeal.</p>
+              <p className="text-gray-600">Transform siding, roofing, landscaping, and more. Increase your home&apos;s value and appeal.</p>
             </div>
             
             <div className="text-center p-6">
@@ -288,7 +288,7 @@ export default function Home() {
             <div>
               <h3 className="text-xl font-bold mb-4">NexVision</h3>
               <p className="text-gray-400">
-                Transform your home's exterior with AI-powered design. Professional curb appeal results in seconds.
+                Transform your home&apos;s exterior with AI-powered design. Professional curb appeal results in seconds.
               </p>
             </div>
             <div>

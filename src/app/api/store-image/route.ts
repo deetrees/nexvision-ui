@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     
     try {
       await writeFile(masterLogPath, logEntry, { flag: 'a' });
-    } catch (error) {
+    } catch {
       // If file doesn't exist, create it
       await writeFile(masterLogPath, logEntry);
     }

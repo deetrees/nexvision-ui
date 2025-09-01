@@ -43,7 +43,7 @@ export default function EmailSignup({ onEmailSubmit, className = "" }: EmailSign
       localStorage.setItem('nexvision_email', email);
       localStorage.setItem('nexvision_free_credits', '3');
       
-    } catch (err) {
+    } catch {
       setError('Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
@@ -123,7 +123,7 @@ export default function EmailSignup({ onEmailSubmit, className = "" }: EmailSign
 
       <div className="mt-4 text-center">
         <p className="text-xs text-gray-500">
-          No spam, ever. We'll only send you updates about NexVision.
+          No spam, ever. We&apos;ll only send you updates about NexVision.
         </p>
       </div>
     </div>

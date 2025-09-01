@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     }
     
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to process credits' },
       { status: 500 }
