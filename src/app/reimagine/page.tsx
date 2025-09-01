@@ -115,7 +115,8 @@ export default function ReimaginePage() {
 
 
   // Helper function to compress images (now works with orientation-corrected images)
-  // const compressImage = (file: File, quality: number): Promise<File> => {
+  /*
+  const compressImage = (file: File, quality: number): Promise<File> => {
     return new Promise((resolve) => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d')!;
@@ -157,6 +158,7 @@ export default function ReimaginePage() {
       img.src = URL.createObjectURL(file);
     });
   };
+  */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
