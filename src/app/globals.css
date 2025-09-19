@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Placeholder color tuned for light theme */
+  --placeholder-color: rgba(23, 23, 23, 0.5);
 }
 
 @theme inline {
@@ -16,6 +18,8 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    /* Placeholder color tuned for dark theme */
+    --placeholder-color: rgba(237, 237, 237, 0.5);
   }
 }
 
@@ -23,6 +27,42 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Ensure form fields always render readable text and placeholders */
+input, textarea, select, button {
+  color: var(--foreground);
+  caret-color: var(--foreground);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--placeholder-color);
+  opacity: 1; /* Normalize across browsers */
+}
+
+/* Guardrails: prevent invisible/odd blending text on form controls */
+input[class*="text-transparent"],
+textarea[class*="text-transparent"],
+select[class*="text-transparent"],
+input[class*="text-white/0"],
+textarea[class*="text-white/0"],
+select[class*="text-white/0"],
+input[class*="opacity-0"],
+textarea[class*="opacity-0"],
+select[class*="opacity-0"],
+input[class*="mix-blend-"],
+textarea[class*="mix-blend-"],
+select[class*="mix-blend-"],
+input[class*="background-clip:text"],
+textarea[class*="background-clip:text"],
+select[class*="background-clip:text"] {
+  color: var(--foreground) !important;
+  -webkit-text-fill-color: var(--foreground) !important; /* Safari */
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
 }
 
 /* Image Comparison Slider Labels */

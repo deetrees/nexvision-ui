@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useRef, useState } from "react";
+import { BaseTextarea } from "@/components/ui/BaseField";
 import Header from "../components/Header";
+import HolidayGlow from "../components/HolidayGlow";
 import { correctImageOrientation } from "../../lib/image-orientation";
 
 // Predefined roles for image ingredients
@@ -52,6 +54,7 @@ export default function ComposePage() {
   const [result, setResult] = useState<CompositionResult | null>(null);
   const [width, setWidth] = useState<number>(1024);
   const [height, setHeight] = useState<number>(1024);
+  const [holidayGlow, setHolidayGlow] = useState(false);
   
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -120,12 +123,16 @@ export default function ComposePage() {
       formData.append('height', height.toString());
 
       // Add images with their roles
-      images.forEach((img, index) => {
-        formData.append(`image_${index}`, img.file);
-        formData.append(`role_${index}`, img.role);
-      });
+      // Use Gemini API for composition
+      const formData = new FormData();
+      formData.append('prompt', prompt);
+      
+      // Add the first image as reference (Gemini works best with one reference image)
+      if (images.length > 0) {
+        formData.append('image', images[0].file);
+      }
 
-      const response = await fetch('/api/images/compose', {
+      const response = await fetch('/api/generate', {
         method: 'POST',
         body: formData,
       });
@@ -140,7 +147,15 @@ export default function ComposePage() {
         throw new Error('No composition generated');
       }
 
-      setResult(data.data[0]);
+      setResult({
+        url: data.imageUrl,
+        model: 'gemini-2.5-flash-image-preview',
+        composition_info: {
+          images_used: images.length,
+          roles: images.map(img => img.role),
+          primary_model: 'Gemini'
+        }
+      });
     } catch (error) {
       console.error('Composition error:', error);
       alert(error instanceof Error ? error.message : 'Failed to create composition. Please try again.');
@@ -263,6 +278,12 @@ export default function ComposePage() {
 
           {/* Middle Panel - Controls */}
           <div className="lg:col-span-1 space-y-6">
+            <HolidayGlow
+              prompt={prompt}
+              setPrompt={setPrompt}
+              holidayGlow={holidayGlow}
+              setHolidayGlow={setHolidayGlow}
+            />
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 ✍️ Composition Prompt
@@ -273,11 +294,11 @@ export default function ComposePage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Describe your composition
                 </label>
-                <textarea
+                <BaseTextarea
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder="Describe how you want the uploaded images combined..."
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  className="resize-none"
                   rows={4}
                   maxLength={2000}
                 />
@@ -339,20 +360,25 @@ export default function ComposePage() {
               </div>
 
               {/* Submit Button */}
-              <button
-                onClick={handleCompose}
-                disabled={isProcessing || !prompt.trim() || images.length === 0}
-                className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-semibold py-4 rounded-lg transition-colors"
-              >
-                {isProcessing ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
-                    Creating Composition...
-                  </div>
-                ) : (
-                  '🎨 Create Composition'
-                )}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleCompose}
+                  disabled={isProcessing || !prompt.trim() || images.length === 0}
+                  className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-semibold py-4 rounded-lg transition-colors"
+                >
+                  {isProcessing ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+                      Creating Composition...
+                    </div>
+                  ) : (
+                    '🎨 Create Composition'
+                  )}
+                </button>
+                <a href="/ar" className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-4 rounded-lg transition-colors flex items-center justify-center">
+                  📷 AR Preview
+                </a>
+              </div>
             </div>
           </div>
 
@@ -418,7 +444,7 @@ export default function ComposePage() {
               <ul className="text-sm text-yellow-700 space-y-1">
                 <li>• Upload high-quality images for better results</li>
                 <li>• Be specific about how elements should combine</li>
-                <li>• Uses GPT-Image-1 first, FLUX1-Kontext as fallback</li>
+                <li>• Uses Gemini AI for intelligent image composition</li>
                 <li>• Each role helps the AI understand your intent</li>
               </ul>
             </div>

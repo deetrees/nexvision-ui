@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from "react";
+import { BaseInput } from "@/components/ui/BaseField";
 import Header from "../components/Header";
 import { storeImagesForTraining } from "../utils/imageStorage";
 import { correctImageOrientation, needsOrientationCorrection } from "../../lib/image-orientation";
@@ -525,17 +526,13 @@ export default function ReimaginePage() {
                   >
                     How would you like to reimagine your home?
                   </label>
-                  <input
+                  <BaseInput
                     id="reimagine-instruction"
                     type="text"
                     placeholder="e.g. Change the exterior to modern farmhouse style"
                     value={reimagineInstruction}
                     onChange={(e) => setReimagineInstruction(e.target.value)}
-                    className="w-full px-4 py-4 rounded-xl text-base md:text-lg 
-                             bg-white/10 border-2 border-white/20 mb-4 
-                             text-white placeholder-white/50
-                             focus:border-[#FF7F50] focus:ring-4 focus:ring-[#FF7F50]/20 
-                             transition-all duration-200"
+                    className="mb-4 bg-white/10 border-white/20 text-white placeholder-white/70 focus:ring-[#FF7F50]/60"
                   />
                   <button
                     type="submit"
