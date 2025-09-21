@@ -121,11 +121,6 @@ export default function ComposePage() {
       formData.append('prompt', prompt);
       formData.append('width', width.toString());
       formData.append('height', height.toString());
-
-      // Add images with their roles
-      // Use Gemini API for composition
-      const formData = new FormData();
-      formData.append('prompt', prompt);
       
       // Add the first image as reference (Gemini works best with one reference image)
       if (images.length > 0) {
