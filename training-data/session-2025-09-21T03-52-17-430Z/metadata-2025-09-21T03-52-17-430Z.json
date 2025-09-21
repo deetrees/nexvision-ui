@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-09-21T03:52:17.442Z",
+  "instruction": "replace and correct all lights from this home",
+  "userEmail": "anonymous",
+  "originalFilename": "original-2025-09-21T03-52-17-430Z.jpg",
+  "reimaginedFilename": "reimagined-2025-09-21T03-52-17-430Z.jpg",
+  "originalSize": 295425,
+  "reimaginedSize": 2265881,
+  "sessionId": "session-2025-09-21T03-52-17-430Z"
+}

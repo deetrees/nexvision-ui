@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-09-19T19:02:54.302Z",
+  "instruction": "remove all lights from this home",
+  "userEmail": "anonymous",
+  "originalFilename": "original-2025-09-19T19-02-54-300Z.jpg",
+  "reimaginedFilename": "reimagined-2025-09-19T19-02-54-300Z.jpg",
+  "originalSize": 295425,
+  "reimaginedSize": 1923233,
+  "sessionId": "session-2025-09-19T19-02-54-300Z"
+}

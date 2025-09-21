@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-09-07T21:00:28.508Z",
+  "instruction": "change home to brick house",
+  "userEmail": "anonymous",
+  "originalFilename": "original-2025-09-07T21-00-28-506Z.jpg",
+  "reimaginedFilename": "reimagined-2025-09-07T21-00-28-506Z.jpg",
+  "originalSize": 247523,
+  "reimaginedSize": 1668099,
+  "sessionId": "session-2025-09-07T21-00-28-506Z"
+}
